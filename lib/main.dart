@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app_bloc/bloc/weather_bloc.dart';
 import 'package:weather_app_bloc/screens/home_screen.dart';
 import 'services/location.dart';
@@ -41,9 +42,20 @@ class MainApp extends StatelessWidget {
                   statusBarIconBrightness: Brightness.light,
                 ),
               ),
-              body: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    'Hold on, we are locating you...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      letterSpacing: 1.5,
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w300,
+                      fontFamily: GoogleFonts.spaceGrotesk().fontFamily,
+                    ),
+                  ),
                 ),
               ),
             );

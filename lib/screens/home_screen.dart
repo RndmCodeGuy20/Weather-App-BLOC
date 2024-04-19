@@ -22,8 +22,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController? _controller;
-  Animation<double>? _animation1;
+  late AnimationController _controller;
+  late Animation<double> _animationWidth;
+  late Animation<AlignmentDirectional> _animationAlignment;
   double _width = 0.0;
 
   Position get position => widget.position;
@@ -37,20 +38,32 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
     );
 
-    _animation1 = Tween<double>(
+    _animationWidth = Tween<double>(
       begin: 10,
       end: 350,
-    ).animate(_controller!)
-      ..addListener(() {
-        setState(() {});
-      });
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
 
-    _controller!.forward();
+    _animationAlignment = Tween<AlignmentDirectional>(
+      begin: const AlignmentDirectional(0, 0),
+      end: const AlignmentDirectional(3, -1.3),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _controller.forward();
   }
 
   @override
   void dispose() {
-    _controller!.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -79,38 +92,28 @@ class _HomeScreenState extends State<HomeScreen>
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
-              Align(
+              AnimatedAlign(
+                duration: const Duration(seconds: 1),
                 alignment: const AlignmentDirectional(1, -0.1),
                 child: AnimatedContainer(
                   curve: Curves.easeInOutCubic,
                   duration: const Duration(seconds: 1),
-                  width: _animation1!.value,
-                  height: _animation1!.value,
+                  width: _animationWidth.value,
+                  height: _animationWidth.value,
                   decoration: const BoxDecoration(
                     color: Color(0xff673ab7),
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
-              Align(
-                alignment: const AlignmentDirectional(3, -1.3),
+              AnimatedAlign(
+                duration: const Duration(seconds: 1),
+                alignment: _animationAlignment.value,
                 child: AnimatedContainer(
                   duration: const Duration(seconds: 1),
                   curve: Curves.easeInOutCubic,
                   width: 500,
-                  height: _animation1!.value,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFAB40),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: const AlignmentDirectional(-3, -1.3),
-                child: AnimatedContainer(
-                  duration: const Duration(seconds: 1),
-                  curve: Curves.easeInOutCubic,
-                  width: 500,
-                  height: _animation1!.value,
+                  height: _animationWidth.value,
                   decoration: const BoxDecoration(
                     color: Color(0xFFFFAB40),
                   ),
