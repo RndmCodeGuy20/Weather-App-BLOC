@@ -1,0 +1,49 @@
+name: Flutter Testing on BrowserStack
+
+on: [ push ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java & Flutter
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '12'
+
+      - name: Cache Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          architecture: x64
+          flutter-version: '3.19.2'
+
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi
+
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload APK to BrowserStack
+        run: curl -u ${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_TOKEN }} -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@build/app/outputs/flutter-apk/app-release.apk"
+        id: upload
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_TOKEN }}
+
+      - name: Start BrowserStack Test
+        run: |
+          curl -X POST "https://api-cloud.browserstack.com/app-automate/espresso/test-suite" \
+          -u ${{ secrets.BROWSERSTACK_USERNAME }}:${{ secrets.BROWSERSTACK_TOKEN }} \
+          -d '{"app": "${{ steps.upload.outputs.app_url }}", "testSuite": "<test-suite-url>", "devices": ["Google Pixel 3", "Samsung Galaxy S10"]}'  # Specify devices and test suite
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}

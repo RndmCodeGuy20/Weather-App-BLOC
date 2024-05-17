@@ -29,6 +29,8 @@ jobs:
           channel: stable
           architecture: x64
           flutter-version: '3.19.2'
+
+      
       - run: flutter pub get
       - run: flutter build apk --release --split-per-abi
       - run: flutter build appbundle --release
