@@ -8,6 +8,8 @@ on:
       - main
       - master
       - develop
+  workflow_dispatch:
+  
 name: "Build & Release App"
 jobs:
   build:
